@@ -1,4 +1,5 @@
-/fiverr-clone
+/freelance hub
+
   ├── /client (React/Next.js code)
   ├── /server (Node/Express code)
   ├── .gitignore
