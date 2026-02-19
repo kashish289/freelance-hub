@@ -1,0 +1,41 @@
+// client/pages/CreateGig.jsx
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import * as z from "zod";
+
+const schema = z.object({
+  title: z.string().min(10, "Title must be at least 10 characters"),
+  category: z.string().nonempty(),
+  price: z.number().min(5, "Minimum price is $5"),
+  description: z.string().min(20),
+});
+
+const CreateGig = () => {
+  const { register, handleSubmit, formState: { errors } } = useForm({
+    resolver: zodResolver(schema),
+  });
+
+  const onSubmit = async (data) => {
+    // Here you would call your API: axios.post('/api/gigs', data)
+    console.log("Gig Data Ready for DB:", data);
+  };
+
+  return (
+    <form onSubmit={handleSubmit(onSubmit)} className="max-w-2xl mx-auto p-8 space-y-6">
+      <h1 className="text-3xl font-bold">Add New Gig</h1>
+      
+      <input {...register("title")} placeholder="I will do something amazing..." className="w-full border p-3 rounded" />
+      {errors.title && <p className="text-red-500">{errors.title.message}</p>}
+
+      <select {...register("category")} className="w-full border p-3 rounded">
+        <option value="design">Graphics & Design</option>
+        <option value="coding">Digital Marketing</option>
+      </select>
+
+      <div className="flex gap-4">
+        <input type="number" {...register("price", { valueAsNumber: true })} placeholder="Price" className="border p-3 w-1/2" />
+        <button type="submit" className="bg-green-600 text-white px-6 py-3 rounded font-bold w-1/2">Publish Gig</button>
+      </div>
+    </form>
+  );
+};
