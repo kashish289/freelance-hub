@@ -1,0 +1,5 @@
+/fiverr-clone
+  ├── /client (React/Next.js code)
+  ├── /server (Node/Express code)
+  ├── .gitignore
+  └── README.md
