@@ -1,0 +1,34 @@
+// server/controllers/orderController.js
+const Stripe = require("stripe");
+const Order = require("../models/Order");
+const Gig = require("../models/Gig");
+
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
+
+export const createPaymentIntent = async (req, res) => {
+  const gig = await Gig.findById(req.params.id);
+
+  // 1. Create a PaymentIntent with the gig price
+  const paymentIntent = await stripe.paymentIntents.create({
+    amount: gig.price * 100, // Stripe uses cents
+    currency: "usd",
+    automatic_payment_methods: { enabled: true },
+  });
+
+  // 2. Create a "Pending" order in your database
+  const newOrder = new Order({
+    gigId: gig._id,
+    buyerId: req.userId,
+    sellerId: gig.sellerId,
+    price: gig.price,
+    payment_intent: paymentIntent.id,
+    status: "pending",
+  });
+
+  await newOrder.save();
+
+  // 3. Send the Client Secret to the Frontend
+  res.status(200).send({
+    clientSecret: paymentIntent.client_secret,
+  });
+};
